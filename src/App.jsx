@@ -51,7 +51,7 @@ function App() {
     // --- Translations ---
     const t = {
         en: {
-            title: "Alberta Class 7",
+            title: "Alberta Class 7 Driving Test - Tigrinya",
             subtitle: "Master your knowledge with 100 practice questions. Speed and accuracy matter!",
             totalQuestions: "Total Questions",
             timePerQuestion: "Time per Question",

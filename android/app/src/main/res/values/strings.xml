@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">class-7-driving-test</string>
-    <string name="title_activity_main">class-7-driving-test</string>
+    <string name="app_name">Alberta Class 7 Driving Test - Tigrinya</string>
+    <string name="title_activity_main">Alberta Class 7 Driving Test - Tigrinya</string>
     <string name="package_name">com.million.quizapp</string>
     <string name="custom_url_scheme">com.million.quizapp</string>
 </resources>
