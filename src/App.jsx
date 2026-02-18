@@ -1,3 +1,5 @@
+import React, { useState, useEffect, useRef } from 'react';
+import questions from "./questions";
 import PrivacyPolicy from './components/PrivacyPolicy';
 import { initAdMob, showInterstitial } from './admob';
 
