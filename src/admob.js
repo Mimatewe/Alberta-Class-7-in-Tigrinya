@@ -1,11 +1,14 @@
+import { Capacitor } from '@capacitor/core';
 import { AdMob, InterstitialAdPluginEvents } from '@capacitor-community/admob';
 
 // Production Interstitial Ad Unit ID
 const INTERSTITIAL_ID = 'ca-app-pub-9839295770155523/7999647891';
 
 let isAdLoaded = false;
+const isNative = Capacitor.isNativePlatform();
 
 export async function initAdMob() {
+    if (!isNative) return;
     try {
         await AdMob.initialize({
             requestTrackingAuthorization: true,
@@ -17,6 +20,7 @@ export async function initAdMob() {
 }
 
 export async function preloadInterstitial() {
+    if (!isNative) return;
     try {
         await AdMob.prepareInterstitial({
             adId: INTERSTITIAL_ID,
@@ -30,6 +34,7 @@ export async function preloadInterstitial() {
 }
 
 export async function showInterstitial() {
+    if (!isNative) return;
     if (!isAdLoaded) {
         preloadInterstitial();
         return;
@@ -37,24 +42,26 @@ export async function showInterstitial() {
 
     try {
         await AdMob.showInterstitial();
-        isAdLoaded = false; // Reset after show
-        preloadInterstitial(); // Preload next
+        isAdLoaded = false;
+        preloadInterstitial();
     } catch (e) {
         console.error('Interstitial show failed', e);
         preloadInterstitial();
     }
 }
 
-// Listen for dismissed ads to preload next
-AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
-    isAdLoaded = false;
-    preloadInterstitial();
-});
+// Only register listeners on native platforms
+if (isNative) {
+    AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
+        isAdLoaded = false;
+        preloadInterstitial();
+    });
 
-AdMob.addListener(InterstitialAdPluginEvents.FailedToLoad, () => {
-    isAdLoaded = false;
-});
+    AdMob.addListener(InterstitialAdPluginEvents.FailedToLoad, () => {
+        isAdLoaded = false;
+    });
 
-AdMob.addListener(InterstitialAdPluginEvents.Loaded, () => {
-    isAdLoaded = true;
-});
+    AdMob.addListener(InterstitialAdPluginEvents.Loaded, () => {
+        isAdLoaded = true;
+    });
+}
