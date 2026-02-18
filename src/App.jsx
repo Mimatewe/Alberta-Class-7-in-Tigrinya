@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import questions from "./questions";
-
 import PrivacyPolicy from './components/PrivacyPolicy';
+import { initAdMob, showInterstitial } from './admob';
 
 function App() {
     // Debug: Check if questions are loaded
@@ -36,6 +34,7 @@ function App() {
     const [pendingNav, setPendingNav] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [wrongAnswersCount, setWrongAnswersCount] = useState(0);
 
     const audioContextRef = useRef(null);
     const timeoutRef = useRef(null);
@@ -44,6 +43,22 @@ function App() {
     useEffect(() => {
         localStorage.setItem('class7_lang', language);
     }, [language]);
+
+    // Initialize AdMob on mount
+    useEffect(() => {
+        initAdMob();
+    }, []);
+
+    // Study Mode 5-minute Ad Timer
+    useEffect(() => {
+        if (gameState !== 'study') return;
+
+        const interval = setInterval(() => {
+            showInterstitial();
+        }, 300000); // 5 minutes
+
+        return () => clearInterval(interval);
+    }, [gameState]);
 
 
 
@@ -256,6 +271,7 @@ function App() {
             // Logic to prepare game
             restartQuizState();
             setGameState('playing');
+            showInterstitial(); // Show ad on start test
         } catch (err) {
             console.error("Failed to start test:", err);
             setError(err.message || "Failed to load test questions.");
@@ -295,6 +311,7 @@ function App() {
             setTimer(0); // No timer
 
             setGameState('study');
+            showInterstitial(); // Show ad on start study
         } catch (err) {
             console.error("Failed to start study mode:", err);
             setError(err.message || "Failed to load study questions.");
@@ -341,6 +358,7 @@ function App() {
         setCurrentQuestion(0);
         setScore(0);
         setAnswersLog([]);
+        setWrongAnswersCount(0); // Reset wrong counter
         setSelectedAnswer(null);
         setIsAnswered(false);
         setTimer(60);
@@ -385,6 +403,15 @@ function App() {
             }, 1500);
         } else {
             playSound('wrong');
+
+            // Ad trigger for wrong answers
+            setWrongAnswersCount(prev => {
+                const nextCount = prev + 1;
+                if (nextCount > 0 && nextCount % 5 === 0) {
+                    showInterstitial();
+                }
+                return nextCount;
+            });
 
             // Check Early Failure
             const wrongCount = answersLog.filter(l => !l.isCorrect).length + 1;
