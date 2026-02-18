@@ -1,7 +1,7 @@
 import { AdMob, InterstitialAdPluginEvents } from '@capacitor-community/admob';
 
-// Google Test Interstitial Ad Unit ID
-const INTERSTITIAL_ID = 'ca-app-pub-3940256099942544/1033173712';
+// Production Interstitial Ad Unit ID
+const INTERSTITIAL_ID = 'ca-app-pub-9839295770155523/7999647891';
 
 let isAdLoaded = false;
 
@@ -20,7 +20,7 @@ export async function preloadInterstitial() {
     try {
         await AdMob.prepareInterstitial({
             adId: INTERSTITIAL_ID,
-            isTesting: true
+            isTesting: false
         });
         isAdLoaded = true;
     } catch (e) {
